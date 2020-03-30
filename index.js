@@ -58,7 +58,6 @@ function handleEvent(event) {
 
   // create a echoing text message
   var _echo = { type: 'text', text: event.message.text };
-
   
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
@@ -72,7 +71,7 @@ function handleEvent(event) {
 
   
   // use reply API
-  return client.replyMessage(event.replyToken, _echo);
+  //return client.replyMessage(event.replyToken, _echo);
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
 }
 
