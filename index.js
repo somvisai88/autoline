@@ -46,9 +46,6 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
-
-
-
 // event handler
 function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
@@ -81,7 +78,7 @@ app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
 
-_echo2 = {type:'text', text: 'Loop Testing'};
+var _echo2 = {type:'text', text: 'Loop Testing'};
 function intervalFunc() {
   //console.log('Cant stop me now!');
   return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',_echo2);
