@@ -7,7 +7,7 @@ var mysql = require('mysql');
 const Geocoder = require('pickpoint-geocoder');
 const geocoder = new Geocoder('RoThxrMEAx74F38zHYuZ');
 
-var con = mysql.createConnection({
+const con = mysql.createConnection({
   host: "113.11.252.64",
   user: "Visai",
   password: "Visai@MANGO20180801",
@@ -30,6 +30,9 @@ const client = new line.Client(config);
 // create Express app
 // about Express itself: https://expressjs.com/
 const app = express();
+con.connect(function(err) {
+  if (err) throw err;
+});  
 
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
@@ -56,17 +59,13 @@ function handleEvent(event) {
   // create a echoing text message
   var _echo = { type: 'text', text: event.message.text };
 
-  con.connect(function(err) {
-    if (err) throw err;
-  });  
-
+  
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
     //console.log(result[0].event_id);
     geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
   //    console.log(res.display_name);
-  var _echo1 = { type: 'text', text: _data.display_name };
-      con.end();
+    var _echo1 = { type: 'text', text: _data.display_name };
       return client.replyMessage(event.replyToken, _echo1);
     });
   });
