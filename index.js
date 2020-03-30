@@ -51,7 +51,7 @@ function handleEvent(event) {
   }
 
   // create a echoing text message
-  const echo = { type: 'text', text: event.message.text };
+  var echo = { type: 'text', text: event.message.text };
 
   con.connect(function(err) {
     if (err) throw err;
@@ -62,7 +62,8 @@ function handleEvent(event) {
       if (err) throw err;
       //console.log(result[0].event_id);
       geocoder.reverse(result[0].lat,result[0].lng).then(res => {
-        console.log(res.display_name);
+        echo = {type: 'text', text: res.display_name};
+        //console.log(res.display_name);
         //client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
         con.end();
       });
