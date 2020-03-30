@@ -64,13 +64,13 @@ function handleEvent(event) {
     geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
   //    console.log(res.display_name);
       _echo.text = _data.display_name;
-        
+      return client.replyMessage(event.replyToken, 'Query');
     });
   });
 
   
   // use reply API
-  return client.replyMessage(event.replyToken, _echo);
+  return client.replyMessage(event.replyToken, 'End Function');
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
 }
 
