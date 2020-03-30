@@ -43,6 +43,11 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
+con.connect(function(err) {
+  if (err) throw err;
+});  
+
+
 // event handler
 function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
@@ -53,12 +58,8 @@ function handleEvent(event) {
   // create a echoing text message
   var echo = { type: 'text', text: event.message.text };
 
-  con.connect(function(err) {
-    if (err) throw err;
-    echo.message = 'Connected!';  
-  });  
-
-  con.end();
+  
+  
   // use reply API
   return client.replyMessage(event.replyToken, echo);
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
