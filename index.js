@@ -43,9 +43,7 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
-con.connect(function(err) {
-  if (err) throw err;
-});  
+
 
 
 // event handler
@@ -57,6 +55,10 @@ function handleEvent(event) {
 
   // create a echoing text message
   var _echo = { type: 'text', text: event.message.text };
+
+  con.connect(function(err) {
+    if (err) throw err;
+  });  
 
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
