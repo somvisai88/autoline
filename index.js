@@ -81,4 +81,10 @@ app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
 
+_echo2 = {type:'text', text: 'Loop Testing'};
+function intervalFunc() {
+  //console.log('Cant stop me now!');
+  return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',_echo2);
+}
 
+setInterval(intervalFunc, 10000);
