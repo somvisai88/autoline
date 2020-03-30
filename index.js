@@ -8,7 +8,7 @@ const Geocoder = require('pickpoint-geocoder');
 const geocoder = new Geocoder('RoThxrMEAx74F38zHYuZ');
 
 var con = mysql.createConnection({
-  host: "localhost",
+  host: "113.11.252.64",
   user: "Visai",
   password: "Visai@MANGO20180801",
   database: "mangotracking"
