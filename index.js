@@ -63,6 +63,7 @@ function handleEvent(event) {
       geocoder.reverse(result[0].lat,result[0].lng).then(res => {
         //console.log(res.display_name);
         //client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
+        con.end();
       });
     });
   
