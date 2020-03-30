@@ -78,7 +78,7 @@ app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
 
-var _echo2 = {type:'text', text: 'Loop Testing'};
+/* var _echo2 = {type:'text', text: 'Loop Testing'};
 function intervalFunc() {
   //console.log('Cant stop me now!');
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
@@ -93,4 +93,4 @@ function intervalFunc() {
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',_echo2);
 }
 
-setInterval(intervalFunc, 60000);
+setInterval(intervalFunc, 60000); */
