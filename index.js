@@ -87,7 +87,7 @@ function intervalFunc() {
     geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
   //    console.log(res.display_name);
     var _echo1 = { type: 'text', text: _data.display_name };
-      return client.replyMessage(event.replyToken, _echo1);
+      return client.pushMessage'Cc63b5e76eb484ba40949683094cdf692', _echo1);
     });
   });
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',_echo2);
