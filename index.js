@@ -56,12 +56,21 @@ function handleEvent(event) {
   }
 
   // create a echoing text message
-  var echo = { type: 'text', text: event.message.text };
+  var _echo = { type: 'text', text: event.message.text };
+
+  con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
+    if (err) throw err;
+    //console.log(result[0].event_id);
+    geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
+  //    console.log(res.display_name);
+      _echo.text = _data.display_name;
+        
+    });
+  });
 
   
-  
   // use reply API
-  return client.replyMessage(event.replyToken, echo);
+  return client.replyMessage(event.replyToken, _echo);
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
 }
 
