@@ -58,6 +58,7 @@ function handleEvent(event) {
     echo.message = 'Connected!';  
   });  
 
+  con.end();
   // use reply API
   return client.replyMessage(event.replyToken, echo);
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
