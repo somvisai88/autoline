@@ -93,4 +93,4 @@ function intervalFunc() {
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',_echo2);
 }
 
-setInterval(intervalFunc, 10000);
+setInterval(intervalFunc, 60000);
