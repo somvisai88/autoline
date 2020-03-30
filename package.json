@@ -11,7 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "@line/bot-sdk": "^6.8.4",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "pickpoint": "^0.1.3"
   }
 }
-
