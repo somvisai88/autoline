@@ -63,14 +63,14 @@ function handleEvent(event) {
     //console.log(result[0].event_id);
     geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
   //    console.log(res.display_name);
-      _echo.text = _data.display_name;
-      return client.replyMessage(event.replyToken, 'Query');
+  var _echo1 = { type: 'text', text: _data.display_name };
+      return client.replyMessage(event.replyToken, _echo1);
     });
   });
 
   
   // use reply API
-  return client.replyMessage(event.replyToken, 'End Function');
+  return client.replyMessage(event.replyToken, _echo);
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
 }
 
