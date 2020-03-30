@@ -57,11 +57,12 @@ function handleEvent(event) {
     if (err) throw err;
     console.log("Connected!");
   
+
     con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
       if (err) throw err;
       //console.log(result[0].event_id);
       geocoder.reverse(result[0].lat,result[0].lng).then(res => {
-        //console.log(res.display_name);
+        console.log(res.display_name);
         //client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
         con.end();
       });
@@ -70,7 +71,7 @@ function handleEvent(event) {
   });  
 
   // use reply API
-  return client.replyMessage(event.replyToken, res.display_name);
+  return client.replyMessage(event.replyToken, echo);
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
 }
 
