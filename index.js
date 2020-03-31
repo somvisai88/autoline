@@ -1,7 +1,8 @@
 
 'use strict';
 
-//------------------------2020-03-30--------------------------
+
+//=== MYSQL CONNECTION ===
 var mysql = require('mysql');
 
 const Geocoder = require('pickpoint-geocoder');
@@ -14,8 +15,10 @@ const con = mysql.createConnection({
   database: "mangotracking",
   timezone: "UTC"
 });
-//-------------------------------------------------------------
+//=== END MYSQL CONNECTION ==
 
+
+//=== LINE BOT SDK, Express JS
 const line = require('@line/bot-sdk');
 const express = require('express');
 
@@ -47,17 +50,59 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
-function timezoneConv(timezone, localTimeZone){   
-var _timezone = timezone.split(' ');
+function timezoneConv(timezone, localTimeZone){  
+    
+  //console.log('----' + timezone);
+  var _timezone = timezone.split(' ');
+  //console.log(_timezone[0]);
+  //console.log(_timezone[1]);
+  
 var _date = _timezone[0];
 var _splitDate = _date.split('-');	
 var _splitTime = _timezone[1].split(':');	
-var _hour   	=	parseInt(_splitTime[0]);
+var _hour =	parseInt(_splitTime[0]);
 var _minute	=	_splitTime[1];
-var _second	=	_splitTime[2];
-_hour	=	_hour + localTimeZone;  
-  
-var _timezoneConv = [_splitDate[0],_splitDate[1],_splitDate[2],_hour, _minute,_second];
+var _second	=	_splitTime[2];    
+
+  _hour		=	_hour + localTimeZone;  
+  if (_hour > 23){
+      // console.log('===== Hour over night =====');
+      _hour = _hour - 24;
+      // console.log(_hour + ' ===== After mid night =====');
+      var getDays = getDaysInMonth(_splitDate[1],_splitDate[0]);
+      //console.log(getDays + '  days from current month  ' + _splitDate[1]);
+      var getCurrentDay = parseInt(_splitDate[2]);
+      
+      getCurrentDay = getCurrentDay + 1;
+      //console.log(getCurrentDay + '  Days');
+
+      if (getCurrentDay > getDays){
+          
+          var newDay = getCurrentDay - getDays;
+          _splitDate[2] = newDay + '';
+          if (newDay <= 9) _splitDate[2] = '0' + newDay;
+
+          var getCurrentMonth = parseInt(_splitDate[1]);
+          getCurrentMonth = getCurrentMonth + 1;
+          _splitDate[1] = getCurrentMonth + '';
+        //  console.log(getCurrentMonth + ' Months');
+
+          if(getCurrentMonth <= 9) _splitDate[1] = '0' + getCurrentMonth;
+
+          if(getCurrentMonth > 12){
+              var getCurrentYear = parseInt(_splitDate[0]);
+              getCurrentYear = getCurrentYear + 1;
+              getCurrentMonth = getCurrentMonth - 12;
+              
+              _splitDate[0] = getCurrentYear + '';
+              _splitDate[1] = _splitDate[1] = '0' + getCurrentMonth;                
+          }
+      }        
+  }    
+
+var _timezoneConv = [_splitDate[0],_splitDate[1],_splitDate[2],_hour,
+              _minute,_second];
+              
   return _timezoneConv;
 }	
 
@@ -99,7 +144,7 @@ app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
 
- var _echo2 = {type:'text', text: 'Loop Testing'};
+
 function intervalFunc() {
   
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
