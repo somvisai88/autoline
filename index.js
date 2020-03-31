@@ -91,7 +91,7 @@ function handleEvent(event) {
     var _geocoder;
 
     geocoder.reverse(result[0].lat,result[0].lng).then(_geocoder => {
-      var _lineMessage ='Line SMS Alert ' + result[0].event_desc + ' \n' + 
+      var _lineMessage ='Line Alert ' + result[0].event_desc + ' \n' + 
               '===============\n' +
               'On ' + _timezone[0] + '-' + _timezone[1] + '-' + _timezone[2] + ' At ' + _timezone[3] + ':' + _timezone[4] + '\n' +
               result[0].name + '\n' +
