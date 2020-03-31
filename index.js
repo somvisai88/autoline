@@ -58,12 +58,27 @@ function handleEvent(event) {
   
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
+    var _dt_server = new Date(result[0].dt_server).toISOString().slice(0, 19).replace('T', ' ');    
+    var _timezone = timezoneConv(_dt_server,7); 
+    var _geocoder;
+
+    geocoder.reverse(result[0].lat,result[0].lng).then(_geocoder => {
+      var _lineMessage ='Auto Line === Alert ' + result[0].event_desc + ' === \n' + 
+              'On ' + _timezone[0] + '-' + _timezone[1] + '-' + _timezone[2] + ' At ' + _timezone[3] + ':' + _timezone[4] + '\n' +
+              result[0].name + '\n' +
+              'Location address is ' + _geocoder.display_name + '\n'+
+              'Click on map link below \n' +
+              'http://maps.google.com/?q=' + result[0].lat + ',' + result[0].lng;
+
+              return client.replyMessage(event.replyToken, _lineMessage);
+    });   
+
     //console.log(result[0].event_id);
-    geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
+    //geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
   //    console.log(res.display_name);
-    var _echo1 = { type: 'text', text: _data.display_name };
-      return client.replyMessage(event.replyToken, _echo1);
-    });
+    //var _echo1 = { type: 'text', text: _data.display_name };
+     // return client.replyMessage(event.replyToken, _echo1);
+    //});
   });
 
   
