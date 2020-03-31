@@ -46,31 +46,17 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
-function timezoneConv(timezone, localTimeZone){
-    
-    
-
-  console.log('----' + timezone);
-
-  var _timezone = timezone.split(' ');
-  console.log(_timezone[0]);
-  console.log(_timezone[1]);
-  
+function timezoneConv(timezone, localTimeZone){   
+var _timezone = timezone.split(' ');
 var _date = _timezone[0];
 var _splitDate = _date.split('-');	
-
 var _splitTime = _timezone[1].split(':');	
 var _hour   	=	parseInt(_splitTime[0]);
 var _minute	=	_splitTime[1];
 var _second	=	_splitTime[2];
+_hour	=	_hour + localTimeZone;  
   
-
-  _hour		=	_hour + localTimeZone;  
-  
-
-var _timezoneConv = [_splitDate[0],_splitDate[1],_splitDate[2],_hour,
-              _minute,_second];
-              
+var _timezoneConv = [_splitDate[0],_splitDate[1],_splitDate[2],_hour, _minute,_second];
   return _timezoneConv;
 }	
 
@@ -81,7 +67,6 @@ function handleEvent(event) {
     return Promise.resolve(null);
   }
 
-  // create a echoing text message
   var _echo = { type: 'text', text: event.message.text };
   
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
@@ -105,11 +90,6 @@ function handleEvent(event) {
 
     });       
   });
-
-  
-  // use reply API
-  //return client.replyMessage(event.replyToken, _echo);
-  //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',res.display_name);
 }
 
 // listen on port
@@ -120,7 +100,7 @@ app.listen(port, () => {
 
  var _echo2 = {type:'text', text: 'Loop Testing'};
 function intervalFunc() {
-  //console.log('Cant stop me now!');
+  
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
     var _dt_server = new Date(result[0].dt_server).toISOString().slice(0, 19).replace('T', ' ');    
@@ -136,13 +116,10 @@ function intervalFunc() {
               'Click on map link below \n' +
               'http://maps.google.com/?q=' + result[0].lat + ',' + result[0].lng;
       
-      var _echo1 = {type: 'text',text: _lineMessage };
-            
+      var _echo1 = {type: 'text',text: _lineMessage };            
       return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692', _echo1);
-
     });       
   });
-  //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',_echo2);
 }
 
 //setInterval(intervalFunc, 60000);

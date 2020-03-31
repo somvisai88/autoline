@@ -44,7 +44,7 @@ con.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
 
-  con.query("select * from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
+  con.query("select * from gs_user_events_data ORDER BY event_id DESC LIMIT 3", function (err, result, fields) {
     if (err) throw err;
     var _dt_server = new Date(result[0].dt_server).toISOString().slice(0, 19).replace('T', ' ');    
     
