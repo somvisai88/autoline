@@ -103,13 +103,7 @@ function handleEvent(event) {
             
       return client.replyMessage(event.replyToken, _echo1);
 
-    });   
-
-    //console.log(result[0].event_id);
-    //geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
-  //    console.log(res.display_name);
-    
-    //});
+    });       
   });
 
   
@@ -124,19 +118,31 @@ app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
 
-/* var _echo2 = {type:'text', text: 'Loop Testing'};
+ var _echo2 = {type:'text', text: 'Loop Testing'};
 function intervalFunc() {
   //console.log('Cant stop me now!');
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
-    //console.log(result[0].event_id);
-    geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
-  //    console.log(res.display_name);
-    var _echo1 = { type: 'text', text: _data.display_name };
+    var _dt_server = new Date(result[0].dt_server).toISOString().slice(0, 19).replace('T', ' ');    
+    var _timezone = timezoneConv(_dt_server,7); 
+    var _geocoder;
+
+    geocoder.reverse(result[0].lat,result[0].lng).then(_geocoder => {
+      var _lineMessage ='Line Alert ' + result[0].event_desc + ' \n' + 
+              '==========Details==========\n' +
+              'On ' + _timezone[0] + '-' + _timezone[1] + '-' + _timezone[2] + ' At ' + _timezone[3] + ':' + _timezone[4] + '\n' +
+              result[0].name + '\n' +
+              'Location address is ' + _geocoder.display_name + '\n'+
+              'Click on map link below \n' +
+              'http://maps.google.com/?q=' + result[0].lat + ',' + result[0].lng;
+      
+      var _echo1 = {type: 'text',text: _lineMessage };
+            
       return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692', _echo1);
-    });
+
+    });       
   });
   //return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692',_echo2);
 }
 
-setInterval(intervalFunc, 60000); */
+setInterval(intervalFunc, 60000);
