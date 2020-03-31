@@ -46,6 +46,34 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
+function timezoneConv(timezone, localTimeZone){
+    
+    
+
+  console.log('----' + timezone);
+
+  var _timezone = timezone.split(' ');
+  console.log(_timezone[0]);
+  console.log(_timezone[1]);
+  
+var _date = _timezone[0];
+var _splitDate = _date.split('-');	
+
+var _splitTime = _timezone[1].split(':');	
+var _hour   	=	parseInt(_splitTime[0]);
+var _minute	=	_splitTime[1];
+var _second	=	_splitTime[2];
+  
+
+  _hour		=	_hour + localTimeZone;  
+  
+
+var _timezoneConv = [_splitDate[0],_splitDate[1],_splitDate[2],_hour,
+              _minute,_second];
+              
+  return _timezoneConv;
+}	
+
 // event handler
 function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
