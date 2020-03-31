@@ -99,5 +99,17 @@ con.connect(function(err) {
     
   });
 
+  //=============GetDate from gs_user_events_data==================
+
+  con.query("SELECT event_id,dt_tracker FROM `gs_user_events_data` WHERE dt_tracker BETWEEN '2020-03-30 17:00:00' AND '2020-03-31 17:00:00' ", function (err, result, fields) {
+    if (err) throw err;
+    var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
+    
+    console.log(result[0].dt_tracker);
+    console.log(_dt_tracker);
+    var _timezone = timezoneConv(_dt_tracker,7); 
+    console.log(_timezone);
+  });
+
 });
 

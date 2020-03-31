@@ -117,8 +117,8 @@ function handleEvent(event) {
   
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
-    var _dt_server = new Date(result[0].dt_server).toISOString().slice(0, 19).replace('T', ' ');    
-    var _timezone = timezoneConv(_dt_server,7); 
+    var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
+    var _timezone = timezoneConv(_dt_tracker,7); 
     var _geocoder;
 
     geocoder.reverse(result[0].lat,result[0].lng).then(_geocoder => {
@@ -149,8 +149,8 @@ function intervalFunc() {
   
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
-    var _dt_server = new Date(result[0].dt_server).toISOString().slice(0, 19).replace('T', ' ');    
-    var _timezone = timezoneConv(_dt_server,7); 
+    var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
+    var _timezone = timezoneConv(_dt_tracker,7); 
     var _geocoder;
 
     geocoder.reverse(result[0].lat,result[0].lng).then(_geocoder => {
