@@ -69,7 +69,7 @@ function handleEvent(event) {
               'Location address is ' + _geocoder.display_name + '\n'+
               'Click on map link below \n' +
               'http://maps.google.com/?q=' + result[0].lat + ',' + result[0].lng;
-      var _echo1 = {type: 'text',text:_lineMessage};
+      var _echo1 = {type: 'text',text: _lineMessage.toString() };
               return client.replyMessage(event.replyToken, _echo1);
     });   
 
