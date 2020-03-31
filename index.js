@@ -98,7 +98,7 @@ function handleEvent(event) {
               'Click on map link below \n' +
               'http://maps.google.com/?q=' + result[0].lat + ',' + result[0].lng;
       
-      var _echo1 = {type: 'text',text: _geocoder.display_name };
+      var _echo1 = {type: 'text',text: _lineMessage };
             
       return client.replyMessage(event.replyToken, _echo1);
 
