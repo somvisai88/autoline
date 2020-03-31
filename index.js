@@ -11,7 +11,8 @@ const con = mysql.createConnection({
   host: "113.11.252.64",
   user: "Visai",
   password: "Visai@MANGO20180801",
-  database: "mangotracking"
+  database: "mangotracking",
+  timezone: "UTC"
 });
 //-------------------------------------------------------------
 
