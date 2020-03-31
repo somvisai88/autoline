@@ -107,8 +107,7 @@ function handleEvent(event) {
     //console.log(result[0].event_id);
     //geocoder.reverse(result[0].lat,result[0].lng).then(_data => {
   //    console.log(res.display_name);
-    var _echo3 = { type: 'text', text: 'Hello' };
-    return client.replyMessage(event.replyToken, _echo3);
+    
     //});
   });
 
