@@ -53,8 +53,8 @@ con.getConnection((err, connection) => {
   return
 })  
 
-con.query = util.promisify(con.query);
-module.exports = con;
+//con.query = util.promisify(con.query);
+//module.exports = con;
 
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
