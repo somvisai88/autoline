@@ -35,7 +35,10 @@ const client = new line.Client(config);
 // about Express itself: https://expressjs.com/
 const app = express();
 con.connect(function(err) {
-  if (err) throw err;
+  if (err) {
+    throw err;
+    return;
+  }
 });  
 
 // register a webhook handler with middleware
