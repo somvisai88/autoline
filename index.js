@@ -116,7 +116,8 @@ function handleEvent(event) {
   }
 
   var _echo = { type: 'text', text: event.message.text };
-  
+  return client.replyMessage(event.replyToken, _echo);
+
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
     var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
