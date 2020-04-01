@@ -168,4 +168,4 @@ function intervalFunc() {
   });
 }
 
-setInterval(intervalFunc, 60000);
+//setInterval(intervalFunc, 60000);
