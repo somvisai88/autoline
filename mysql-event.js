@@ -82,10 +82,10 @@ con.connect(function(err) {
 
   con.query("select * from gs_user_events_data ORDER BY event_id DESC LIMIT 3", function (err, result, fields) {
     if (err) throw err;
-    var _dt_server = new Date(result[0].dt_server).toISOString().slice(0, 19).replace('T', ' ');    
+    var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
     
-    //console.log(result);
-    var _timezone = timezoneConv(_dt_server,20); 
+   // console.log(result);
+    var _timezone = timezoneConv(_dt_tracker,7); 
     var _geocoder;
 
     geocoder.reverse(result[0].lat,result[0].lng).then(_geocoder => {
@@ -101,15 +101,86 @@ con.connect(function(err) {
 
   //=============GetDate from gs_user_events_data==================
 
-  con.query("SELECT event_id,dt_tracker FROM `gs_user_events_data` WHERE dt_tracker BETWEEN '2020-03-30 17:00:00' AND '2020-03-31 17:00:00' ", function (err, result, fields) {
+  /* con.query("SELECT * FROM `gs_user_events_data` WHERE dt_tracker BETWEEN '2020-03-30 17:00:00' AND '2020-03-31 17:00:00' ", function (err, result, fields) {
     if (err) throw err;
-    var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
+    //var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
     
-    console.log(result[0].dt_tracker);
-    console.log(_dt_tracker);
-    var _timezone = timezoneConv(_dt_tracker,7); 
-    console.log(_timezone);
+    console.log('=======COUNT ROW TABLE======== ' + result.length);
+    if (result.length > 0) { 
+        for(var i = 0; i < result.length; i++) {
+            var _dt_tracker = new Date(result[i].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');
+            console.log(timezoneConv(_dt_tracker,7));
+            console.log(result[i]);
+        }
+    }
+    
+    //console.log(_dt_tracker);
+    //var _timezone = timezoneConv(_dt_tracker,7); 
+    //console.log(_timezone);
+    //console.log(result);
   });
+ */
+  
+var moment = require('moment');
+
+console.log('==== Today is '+ moment().format('YYYY-MM-DD') + ' =========');
+  
+ 
+var Excel = require('exceljs');
+var fs = require('fs');
+
+// create workbook & add worksheet
+var workbook = new Excel.Workbook();
+
+
+
+if (!fs.existsSync('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx'))
+{ 
+    var worksheet = workbook.addWorksheet('BOT LINE');
+ 
+// add column headers
+worksheet.columns = [
+    { header: 'USER_ID', key: 'user_id'},
+    { header: 'EVENT_ID', key: 'event_id'}
+];
+
+// add row using keys
+worksheet.addRow({user_id: 1, event_id: 400});
+
+// add rows the dumb way
+worksheet.addRow([1, 401]);
+
+// add an array of rows
+var rows = [
+  [1, 402],
+  {user_id: 1, event_id: 403}
+];
+worksheet.addRows(rows);
+
+// edit cells directly
+worksheet.getCell('A6').value = 1;
+worksheet.getCell('B6').value = 404;
+
+    // save workbook to disk
+    workbook.xlsx.writeFile('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx').then(function() {
+    console.log("saved");
+});
+}
+else
+{
+    var workbook = new Excel.Workbook();    
+    workbook.xlsx.readFile('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx')
+    .then(function() {
+        var worksheet = workbook.getWorksheet('BOT LINE');
+            //console.log(workbook.getWorksheet()._rows);
+            worksheet.eachRow(function(row, rowNumber) {
+                console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+              });
+    });
+ 
+}
+
+
 
 });
 
