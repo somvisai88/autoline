@@ -134,7 +134,7 @@ function handleEvent(event) {
       
       var _echo1 = {type: 'text',text: _lineMessage };
             
-      return client.replyMessage(event.replyToken, _echo1);
+      return client.replyMessage(event.replyToken, "Reply");
 
     });       
   });
