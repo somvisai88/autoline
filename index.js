@@ -13,7 +13,7 @@ const con = mysql.createConnection({
   user: "Visai",
   password: "Visai@MANGO20180801",
   database: "mangotracking",
-  timezone: "UTC"
+  port: "3306"
 });
 //=== END MYSQL CONNECTION ==
 
