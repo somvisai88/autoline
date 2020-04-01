@@ -144,27 +144,24 @@ worksheet.columns = [
     { header: 'EVENT_ID', key: 'event_id'}
 ];
 
-// add row using keys
-worksheet.addRow({user_id: 1, event_id: 400});
-
-// add rows the dumb way
-worksheet.addRow([1, 401]);
-
-// add an array of rows
-var rows = [
-  [1, 402],
-  {user_id: 1, event_id: 403}
-];
-worksheet.addRows(rows);
-
-// edit cells directly
-worksheet.getCell('A6').value = 1;
-worksheet.getCell('B6').value = 404;
-
-    // save workbook to disk
-    workbook.xlsx.writeFile('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx').then(function() {
-    console.log("saved");
-});
+con.query("SELECT * FROM `gs_user_events_data` WHERE dt_tracker BETWEEN '2020-03-31 17:00:00' AND '2020-04-01 17:00:00' ", function (err, result, fields) {
+    if (err) throw err;
+    //var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
+    
+    console.log('=======COUNT ROW TABLE======== ' + result.length);
+    if (result.length > 0) { 
+        for(var i = 0; i < result.length; i++) {
+            var _dt_tracker = new Date(result[i].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');
+            console.log(timezoneConv(_dt_tracker,7));
+            //console.log(result[i]);
+            worksheet.addRow({user_id: result[i].user_id,event_id: result[i].event_id});
+        }
+        workbook.xlsx.writeFile('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx').then(function() {
+            console.log("saved");
+        });
+    }       
+  });
+  
 }
 else
 {
@@ -172,10 +169,17 @@ else
     workbook.xlsx.readFile('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx')
     .then(function() {
         var worksheet = workbook.getWorksheet('BOT LINE');
-            //console.log(workbook.getWorksheet()._rows);
-            worksheet.eachRow(function(row, rowNumber) {
-                console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+            console.log((worksheet.rowCount -1) + '');
+
+            con.query("SELECT * FROM `gs_user_events_data` WHERE dt_tracker BETWEEN '2020-03-31 17:00:00' AND '2020-04-01 17:00:00' ", function (err, result, fields) {
+                if (err) throw err;
+                console.log('=======COUNT ROW TABLE======== ' + result.length);
               });
+            
+
+            /* worksheet.eachRow(function(row, rowNumber) {
+                console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+              }); */
     });
  
 }

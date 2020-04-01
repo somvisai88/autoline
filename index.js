@@ -3,12 +3,13 @@
 
 
 //=== MYSQL CONNECTION ===
-var mysql = require('mysql');
+const mysql = require('mysql');
+const util = require('util');
 
 const Geocoder = require('pickpoint-geocoder');
 const geocoder = new Geocoder('RoThxrMEAx74F38zHYuZ');
 
-const con = mysql.createConnection({
+const con = mysql.createPool({
   host: "113.11.252.64",
   user: "Visai",
   password: "Visai@MANGO20180801",
@@ -34,11 +35,26 @@ const client = new line.Client(config);
 // create Express app
 // about Express itself: https://expressjs.com/
 const app = express();
-con.connect(function(err) {
-  if (err) throw err;
-   // return;
-  
-});  
+con.getConnection((err, connection) => {
+  if (err) {
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      console.error('Database connection was closed.')
+    }
+    if (err.code === 'ER_CON_COUNT_ERROR') {
+      console.error('Database has too many connections.')
+    }
+    if (err.code === 'ECONNREFUSED') {
+      console.error('Database connection was refused.')
+    }
+  }
+
+  if (connection) connection.release()
+
+  return
+})  
+
+con.query = util.promisify(con.query);
+module.exports = con;
 
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
