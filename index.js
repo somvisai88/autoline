@@ -116,7 +116,7 @@ function handleEvent(event) {
   }
 
   var _echo = { type: 'text', text: event.message.text };
-  return client.replyMessage(event.replyToken, _echo);
+  //return client.replyMessage(event.replyToken, _echo);
 
   con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
@@ -135,7 +135,7 @@ function handleEvent(event) {
       
       var _echo1 = {type: 'text',text: _lineMessage };
             
-      return client.replyMessage(event.replyToken, "Reply");
+      return client.replyMessage(event.replyToken, _echo1);
 
     });       
   });
