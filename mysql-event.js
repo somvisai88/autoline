@@ -3,7 +3,7 @@ var mysql = require('mysql');
 const Geocoder = require('pickpoint-geocoder');
 const geocoder = new Geocoder('RoThxrMEAx74F38zHYuZ');
 
-var con = mysql.createConnection({
+var con = mysql.createPool({
   host: "localhost",
   user: "Visai",
   password: "Visai@MANGO20180801",
@@ -76,7 +76,7 @@ function timezoneConv(timezone, localTimeZone){
 	}	
 
 
-con.connect(function(err) {
+con.getConnection(function(err) {
   if (err) throw err;
   console.log("Connected!");
 
