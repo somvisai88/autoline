@@ -120,7 +120,23 @@ con.getConnection(function(err) {
     //console.log(result);
   });
  */
-  
+
+ 
+
+function differenceOf2Arrays (array1, array2) {
+    var temp = [];
+    array1 = array1.toString().split(',').map(Number);
+    array2 = array2.toString().split(',').map(Number);
+    
+    for (var i in array1) {
+    if(array2.indexOf(array1[i]) === -1) temp.push(array1[i]);
+    }
+    for(i in array2) {
+    if(array1.indexOf(array2[i]) === -1) temp.push(array2[i]);
+    }
+    return temp.sort((a,b) => a-b);
+    }
+
 var moment = require('moment');
 
 console.log('==== Today is '+ moment().format('YYYY-MM-DD') + ' =========');
@@ -138,31 +154,31 @@ if (!fs.existsSync('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx'))
 { 
     var worksheet = workbook.addWorksheet('BOT LINE');
  
-// add column headers
-worksheet.columns = [
-    { header: 'USER_ID', key: 'user_id'},
-    { header: 'EVENT_ID', key: 'event_id'}
-];
+    // add column headers
+    worksheet.columns = [
+        { header: 'USER_ID', key: 'user_id'},
+        { header: 'EVENT_ID', key: 'event_id'}
+    ];
 
-con.query("SELECT * FROM `gs_user_events_data` WHERE dt_tracker BETWEEN '2020-03-31 17:00:00' AND '2020-04-01 17:00:00' ", function (err, result, fields) {
-    if (err) throw err;
-    //var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
+    con.query("SELECT * FROM `gs_user_events_data` WHERE dt_tracker BETWEEN '2020-03-31 17:00:00' AND '2020-04-01 17:00:00' ", function (err, result, fields) {
+        if (err) throw err;
+        //var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
     
-    console.log('=======COUNT ROW TABLE======== ' + result.length);
-    if (result.length > 0) { 
-        for(var i = 0; i < result.length; i++) {
-            var _dt_tracker = new Date(result[i].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');
-            console.log(timezoneConv(_dt_tracker,7));
-            //console.log(result[i]);
-            worksheet.addRow({user_id: result[i].user_id,event_id: result[i].event_id});
-        }
-        workbook.xlsx.writeFile('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx').then(function() {
+        console.log('=======COUNT ROW TABLE======== ' + result.length);
+        if (result.length > 0) { 
+            for(var i = 0; i < result.length; i++) {
+                var _dt_tracker = new Date(result[i].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');
+                console.log(timezoneConv(_dt_tracker,7));
+                //console.log(result[i]);
+                worksheet.addRow({user_id: result[i].user_id,event_id: result[i].event_id});
+            }
+            workbook.xlsx.writeFile('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx').then(function() {
             console.log("saved");
-        });
-    }       
-  });
+            });
+        }       
+    });
   
-}
+    }
 else
 {
     var workbook = new Excel.Workbook();    
@@ -174,12 +190,92 @@ else
             con.query("SELECT * FROM `gs_user_events_data` WHERE dt_tracker BETWEEN '2020-03-31 17:00:00' AND '2020-04-01 17:00:00' ", function (err, result, fields) {
                 if (err) throw err;
                 console.log('=======COUNT ROW TABLE======== ' + result.length);
-              });
-            
 
-            /* worksheet.eachRow(function(row, rowNumber) {
-                console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
-              }); */
+                if ((worksheet.rowCount - 1) < result.length){
+                    console.log('=== NEED TO SAVE AND SEND LINE MESSAGE===');        
+                    var myExcelData = [];                    
+                    
+                    worksheet.eachRow(function(row, rowNumber) {
+                        //console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+                        //  worksheet.addRow({user_id: result[i].user_id,event_id: result[i].event_id});
+                        if (rowNumber > 1){
+                        console.log('======EXCEL DATA RETRIEVE========' + worksheet.getRow(rowNumber).values[2]);
+                        myExcelData.push(worksheet.getRow(rowNumber).values[2]);
+                        }
+                    });      
+                    
+                    for (var i = 0;i < myExcelData.length;i++)
+                    {
+                        console.log('=== EXCEL CHECK ===' + myExcelData[i]);
+                    }
+
+                    var myDBData = [];
+                    if (result.length > 0) { 
+                        for(var i = 0; i < result.length; i++) {
+                            myDBData.push(result[i].event_id);                              
+                        }                     
+                    }
+
+                    for (var i = 0;i < myDBData.length;i++)
+                    {
+                        console.log('=== DB CHECK ===' + myDBData[i]);
+                    }
+
+                    console.log('The Difference Between Excel and DB'+ differenceOf2Arrays(myExcelData, myDBData));
+                    var myLineSMS = differenceOf2Arrays(myExcelData, myDBData);
+                    var myLine = myLineSMS.toString().split(',');
+                    console.log('=== Last Line SMS Index ===' + myLine[myLine.length -1]);
+                    console.log('=== First Line SMS Index ===' + myLineSMS[0]);
+
+                    var _myQueryArray =  ['440','441','442','450','452','453','454'];
+                    let _myQuery = new Map();
+                    console.log('=== Array === ' + _myQueryArray);
+                    var _saveLastData = '';
+                    var _saveLastIndex = 0;
+
+                    for (var i=0 ; i<_myQueryArray.length;i++){
+                        if (!i==0){
+                            _saveLastData = parseInt(_saveLastData) + 1;
+                            if (_saveLastData != parseInt(_myQueryArray[i]))
+                            {
+                                console.log('=== No Order Data Index =' + i + ' ==== ' + _myQueryArray[i] );
+                                _saveLastData = parseInt(_myQueryArray[i]);
+                            }
+                            else
+                            {
+                                console.log('=== Order Data Index =' + i + ' ==== ' + _saveLastData );
+                            }
+                            //_myQueryArray[i] = parseInt(_myQueryArray[i]) + 1;
+                            //console.log('==========' + _myQueryArray[i]);
+                            //return;
+                        }
+                        else
+                        {
+                            _saveLastData = _myQueryArray[i];
+                            console.log('=== Save Data Index =' + i + ' ==== '+ _saveLastData);
+                        }
+                    }
+
+                    //let sayings = new Map();
+                    //sayings.set('dog', 'woof');
+                    //sayings.delete('dog');
+                    //sayings.has('dog'); // false
+
+                    //for (let [key, value] of sayings) {
+                    //    console.log(key + ' goes ' + value);
+                    // }
+                        // "cat goes meow"
+                        // "elephant goes toot"
+
+                    //sayings.clear();
+                    //sayings.size; // 0 
+                
+                }
+
+              });    
+            
+            
+            
     });
  
 }

@@ -1,12 +1,13 @@
 {
   "name": "bot.gps.mangotracking.com",
   "version": "1.0.0",
-  "description": "",
+  "description": "Auto Bot Line to AVIS project",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
+  "repository": "https://github.com/somvisai88/autoline.git",
   "author": "",
   "license": "ISC",
   "dependencies": {
