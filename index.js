@@ -1,31 +1,29 @@
-
-'use strict';
-
+"use strict";
 
 //=== MYSQL CONNECTION ===
-const mysql = require('mysql');
-const util = require('util');
+const mysql = require("mysql");
+const util = require("util");
 
-const Geocoder = require('pickpoint-geocoder');
-const geocoder = new Geocoder('RoThxrMEAx74F38zHYuZ');
+const Geocoder = require("pickpoint-geocoder");
+const geocoder = new Geocoder("RoThxrMEAx74F38zHYuZ");
 
 const con = mysql.createPool({
   host: "113.11.252.64",
   user: "Visai",
   password: "Visai@MANGO20180801",
   database: "mangotracking",
-  port: "3306"
+  port: "3306",
 });
 //=== END MYSQL CONNECTION ==
 
-
 //=== LINE BOT SDK, Express JS
-const line = require('@line/bot-sdk');
-const express = require('express');
+const line = require("@line/bot-sdk");
+const express = require("express");
 
 // create LINE SDK config from env variables
 const config = {
-  channelAccessToken: "a5meHvwX95HEIUiz7fnUyQ/OMxWq9Ysv1LgMwcQI29QZ7FCfu3xNdyZKx6I6WQQug7trLyQI5i+Wxpqm6BO3ztd1HJVxWFNIxAvjD3Wch/yUgtxw93AuQlgz+x5xostLXFuoQCcVvjFtj3t1fdE7EAdB04t89/1O/w1cDnyilFU=",
+  channelAccessToken:
+    "a5meHvwX95HEIUiz7fnUyQ/OMxWq9Ysv1LgMwcQI29QZ7FCfu3xNdyZKx6I6WQQug7trLyQI5i+Wxpqm6BO3ztd1HJVxWFNIxAvjD3Wch/yUgtxw93AuQlgz+x5xostLXFuoQCcVvjFtj3t1fdE7EAdB04t89/1O/w1cDnyilFU=",
   channelSecret: "8584a592bc44032eb7ca2bf8e97e04d0",
 };
 
@@ -36,12 +34,10 @@ const client = new line.Client(config);
 // about Express itself: https://expressjs.com/
 const app = express();
 
-
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
-app.post('/callback', line.middleware(config), (req, res) => {
-  Promise
-    .all(req.body.events.map(handleEvent))
+app.post("/callback", line.middleware(config), (req, res) => {
+  Promise.all(req.body.events.map(handleEvent))
     .then((result) => res.json(result))
     .catch((err) => {
       console.error(err);
@@ -49,95 +45,123 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
-function timezoneConv(timezone, localTimeZone){  
-    
+function timezoneConv(timezone, localTimeZone) {
   //console.log('----' + timezone);
-  var _timezone = timezone.split(' ');
+  var _timezone = timezone.split(" ");
   //console.log(_timezone[0]);
   //console.log(_timezone[1]);
-  
-var _date = _timezone[0];
-var _splitDate = _date.split('-');	
-var _splitTime = _timezone[1].split(':');	
-var _hour =	parseInt(_splitTime[0]);
-var _minute	=	_splitTime[1];
-var _second	=	_splitTime[2];    
 
-  _hour		=	_hour + localTimeZone;  
-  if (_hour > 23){
-      // console.log('===== Hour over night =====');
-      _hour = _hour - 24;
-      // console.log(_hour + ' ===== After mid night =====');
-      var getDays = getDaysInMonth(_splitDate[1],_splitDate[0]);
-      //console.log(getDays + '  days from current month  ' + _splitDate[1]);
-      var getCurrentDay = parseInt(_splitDate[2]);
-      
-      getCurrentDay = getCurrentDay + 1;
-      //console.log(getCurrentDay + '  Days');
+  var _date = _timezone[0];
+  var _splitDate = _date.split("-");
+  var _splitTime = _timezone[1].split(":");
+  var _hour = parseInt(_splitTime[0]);
+  var _minute = _splitTime[1];
+  var _second = _splitTime[2];
 
-      if (getCurrentDay > getDays){
-          
-          var newDay = getCurrentDay - getDays;
-          _splitDate[2] = newDay + '';
-          if (newDay <= 9) _splitDate[2] = '0' + newDay;
+  _hour = _hour + localTimeZone;
+  if (_hour > 23) {
+    // console.log('===== Hour over night =====');
+    _hour = _hour - 24;
+    // console.log(_hour + ' ===== After mid night =====');
+    var getDays = getDaysInMonth(_splitDate[1], _splitDate[0]);
+    //console.log(getDays + '  days from current month  ' + _splitDate[1]);
+    var getCurrentDay = parseInt(_splitDate[2]);
 
-          var getCurrentMonth = parseInt(_splitDate[1]);
-          getCurrentMonth = getCurrentMonth + 1;
-          _splitDate[1] = getCurrentMonth + '';
-        //  console.log(getCurrentMonth + ' Months');
+    getCurrentDay = getCurrentDay + 1;
+    //console.log(getCurrentDay + '  Days');
 
-          if(getCurrentMonth <= 9) _splitDate[1] = '0' + getCurrentMonth;
+    if (getCurrentDay > getDays) {
+      var newDay = getCurrentDay - getDays;
+      _splitDate[2] = newDay + "";
+      if (newDay <= 9) _splitDate[2] = "0" + newDay;
 
-          if(getCurrentMonth > 12){
-              var getCurrentYear = parseInt(_splitDate[0]);
-              getCurrentYear = getCurrentYear + 1;
-              getCurrentMonth = getCurrentMonth - 12;
-              
-              _splitDate[0] = getCurrentYear + '';
-              _splitDate[1] = _splitDate[1] = '0' + getCurrentMonth;                
-          }
-      }        
-  }    
+      var getCurrentMonth = parseInt(_splitDate[1]);
+      getCurrentMonth = getCurrentMonth + 1;
+      _splitDate[1] = getCurrentMonth + "";
+      //  console.log(getCurrentMonth + ' Months');
 
-var _timezoneConv = [_splitDate[0],_splitDate[1],_splitDate[2],_hour,
-              _minute,_second];
-              
+      if (getCurrentMonth <= 9) _splitDate[1] = "0" + getCurrentMonth;
+
+      if (getCurrentMonth > 12) {
+        var getCurrentYear = parseInt(_splitDate[0]);
+        getCurrentYear = getCurrentYear + 1;
+        getCurrentMonth = getCurrentMonth - 12;
+
+        _splitDate[0] = getCurrentYear + "";
+        _splitDate[1] = _splitDate[1] = "0" + getCurrentMonth;
+      }
+    }
+  }
+
+  var _timezoneConv = [
+    _splitDate[0],
+    _splitDate[1],
+    _splitDate[2],
+    _hour,
+    _minute,
+    _second,
+  ];
+
   return _timezoneConv;
-}	
+}
 
 // event handler
 function handleEvent(event) {
-  if (event.type !== 'message' || event.message.type !== 'text') {
+  if (event.type !== "message" || event.message.type !== "text") {
     // ignore non-text-message event
     return Promise.resolve(null);
   }
 
-  var _echo = { type: 'text', text: event.message.text };
+  var _echo = { type: "text", text: event.message.text };
   //return client.replyMessage(event.replyToken, _echo);
 
-  con.getConnection(function(err,connection){
-  con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
-    if (err) throw err;
-    var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
-    var _timezone = timezoneConv(_dt_tracker,7); 
-    var _geocoder;
+  con.getConnection(function (err, connection) {
+    con.query(
+      "select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1",
+      function (err, result, fields) {
+        if (err) throw err;
+        var _dt_tracker = new Date(result[0].dt_tracker)
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " ");
+        var _timezone = timezoneConv(_dt_tracker, 7);
+        var _geocoder;
 
-    geocoder.reverse(result[0].lat,result[0].lng).then(_geocoder => {
-      var _lineMessage ='Line Alert ' + result[0].event_desc + ' \n' + 
-              '==========Details==========\n' +
-              'On ' + _timezone[0] + '-' + _timezone[1] + '-' + _timezone[2] + ' At ' + _timezone[3] + ':' + _timezone[4] + '\n' +
-              result[0].name + '\n' +
-              'Location address is ' + _geocoder.display_name + '\n'+
-              'Click on map link below \n' +
-              'http://maps.google.com/?q=' + result[0].lat + ',' + result[0].lng;
-      
-      var _echo1 = {type: 'text',text: _lineMessage };
-      connection.release();      
-      return client.replyMessage(event.replyToken, _echo1);
+        geocoder.reverse(result[0].lat, result[0].lng).then((_geocoder) => {
+          var _lineMessage =
+            "Line Alert " +
+            result[0].event_desc +
+            " \n" +
+            "==========Details==========\n" +
+            "On " +
+            _timezone[0] +
+            "-" +
+            _timezone[1] +
+            "-" +
+            _timezone[2] +
+            " At " +
+            _timezone[3] +
+            ":" +
+            _timezone[4] +
+            "\n" +
+            result[0].name +
+            "\n" +
+            "Location address is " +
+            _geocoder.display_name +
+            "\n" +
+            "Click on map link below \n" +
+            "http://maps.google.com/?q=" +
+            result[0].lat +
+            "," +
+            result[0].lng;
 
-    });       
+          var _echo1 = { type: "text", text: _lineMessage };
+          connection.release();
+          return client.replyMessage(event.replyToken, _echo1);
+        });
+      }
+    );
   });
-});
 }
 
 // listen on port
@@ -146,28 +170,51 @@ app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
 
-
 function intervalFunc() {
-  
-  con.query("select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
-    if (err) throw err;
-    var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
-    var _timezone = timezoneConv(_dt_tracker,7); 
-    var _geocoder;
+  con.query(
+    "select *from gs_user_events_data ORDER BY event_id DESC LIMIT 1",
+    function (err, result, fields) {
+      if (err) throw err;
+      var _dt_tracker = new Date(result[0].dt_tracker)
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", " ");
+      var _timezone = timezoneConv(_dt_tracker, 7);
+      var _geocoder;
 
-    geocoder.reverse(result[0].lat,result[0].lng).then(_geocoder => {
-      var _lineMessage ='Line Alert ' + result[0].event_desc + ' \n' + 
-              '==========Details==========\n' +
-              'On ' + _timezone[0] + '-' + _timezone[1] + '-' + _timezone[2] + ' At ' + _timezone[3] + ':' + _timezone[4] + '\n' +
-              result[0].name + '\n' +
-              'Location address is ' + _geocoder.display_name + '\n'+
-              'Click on map link below \n' +
-              'http://maps.google.com/?q=' + result[0].lat + ',' + result[0].lng;
-      
-      var _echo1 = {type: 'text',text: _lineMessage };            
-      return client.pushMessage('Cc63b5e76eb484ba40949683094cdf692', _echo1);
-    });       
-  });
+      geocoder.reverse(result[0].lat, result[0].lng).then((_geocoder) => {
+        var _lineMessage =
+          "Line Alert " +
+          result[0].event_desc +
+          " \n" +
+          "==========Details==========\n" +
+          "On " +
+          _timezone[0] +
+          "-" +
+          _timezone[1] +
+          "-" +
+          _timezone[2] +
+          " At " +
+          _timezone[3] +
+          ":" +
+          _timezone[4] +
+          "\n" +
+          result[0].name +
+          "\n" +
+          "Location address is " +
+          _geocoder.display_name +
+          "\n" +
+          "Click on map link below \n" +
+          "http://maps.google.com/?q=" +
+          result[0].lat +
+          "," +
+          result[0].lng;
+
+        var _echo1 = { type: "text", text: _lineMessage };
+        return client.pushMessage("Cc63b5e76eb484ba40949683094cdf692", _echo1);
+      });
+    }
+  );
 }
 
 //setInterval(intervalFunc, 60000);

@@ -80,7 +80,7 @@ con.getConnection(function(err) {
   if (err) throw err;
   console.log("Connected!");
 
-  con.query("select * from gs_user_events_data ORDER BY event_id DESC LIMIT 3", function (err, result, fields) {
+  con.query("select * from gs_user_events_data ORDER BY event_id DESC LIMIT 1", function (err, result, fields) {
     if (err) throw err;
     var _dt_tracker = new Date(result[0].dt_tracker).toISOString().slice(0, 19).replace('T', ' ');    
     
@@ -147,7 +147,6 @@ var fs = require('fs');
 
 // create workbook & add worksheet
 var workbook = new Excel.Workbook();
-
 
 
 if (!fs.existsSync('Alert_Report/'+ moment().format('YYYY-MM-DD') + '.xlsx'))
