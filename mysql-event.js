@@ -1,5 +1,7 @@
 var mysql = require("mysql");
 
+const DateConverter = require("./functions/DateConverter.js");
+
 const Geocoder = require("pickpoint-geocoder");
 const geocoder = new Geocoder("RoThxrMEAx74F38zHYuZ");
 
@@ -10,74 +12,6 @@ var con = mysql.createPool({
   database: "mangotracking",
   timezone: "UTC",
 });
-
-var getDaysInMonth = function (month, year) {
-  // Here January is 1 based
-  //Day 0 is the last day in the previous month
-  return new Date(year, month, 0).getDate();
-  // Here January is 0 based
-  // return new Date(year, month+1, 0).getDate();
-};
-
-function timezoneConv(timezone, localTimeZone) {
-  //console.log('----' + timezone);
-  var _timezone = timezone.split(" ");
-  //console.log(_timezone[0]);
-  //console.log(_timezone[1]);
-
-  var _date = _timezone[0];
-  var _splitDate = _date.split("-");
-  var _splitTime = _timezone[1].split(":");
-  var _hour = parseInt(_splitTime[0]);
-  var _minute = _splitTime[1];
-  var _second = _splitTime[2];
-
-  _hour = _hour + localTimeZone;
-  if (_hour > 23) {
-    // console.log('===== Hour over night =====');
-    _hour = _hour - 24;
-    // console.log(_hour + ' ===== After mid night =====');
-    var getDays = getDaysInMonth(_splitDate[1], _splitDate[0]);
-    //console.log(getDays + '  days from current month  ' + _splitDate[1]);
-    var getCurrentDay = parseInt(_splitDate[2]);
-
-    getCurrentDay = getCurrentDay + 1;
-    //console.log(getCurrentDay + '  Days');
-
-    if (getCurrentDay > getDays) {
-      var newDay = getCurrentDay - getDays;
-      _splitDate[2] = newDay + "";
-      if (newDay <= 9) _splitDate[2] = "0" + newDay;
-
-      var getCurrentMonth = parseInt(_splitDate[1]);
-      getCurrentMonth = getCurrentMonth + 1;
-      _splitDate[1] = getCurrentMonth + "";
-      //  console.log(getCurrentMonth + ' Months');
-
-      if (getCurrentMonth <= 9) _splitDate[1] = "0" + getCurrentMonth;
-
-      if (getCurrentMonth > 12) {
-        var getCurrentYear = parseInt(_splitDate[0]);
-        getCurrentYear = getCurrentYear + 1;
-        getCurrentMonth = getCurrentMonth - 12;
-
-        _splitDate[0] = getCurrentYear + "";
-        _splitDate[1] = _splitDate[1] = "0" + getCurrentMonth;
-      }
-    }
-  }
-
-  var _timezoneConv = [
-    _splitDate[0],
-    _splitDate[1],
-    _splitDate[2],
-    _hour,
-    _minute,
-    _second,
-  ];
-
-  return _timezoneConv;
-}
 
 con.getConnection(function (err) {
   if (err) throw err;
@@ -93,7 +27,7 @@ con.getConnection(function (err) {
         .replace("T", " ");
 
       // console.log(result);
-      var _timezone = timezoneConv(_dt_tracker, 7);
+      var _timezone = new DateConverter(_dt_tracker, 7);
       var _geocoder;
 
       geocoder.reverse(result[0].lat, result[0].lng).then((_geocoder) => {
@@ -197,7 +131,7 @@ con.getConnection(function (err) {
               .toISOString()
               .slice(0, 19)
               .replace("T", " ");
-            console.log(timezoneConv(_dt_tracker, 7));
+            //console.log(timezoneConv(_dt_tracker, 7));
             //console.log(result[i]);
             worksheet.addRow({
               user_id: result[i].user_id,
@@ -225,7 +159,7 @@ con.getConnection(function (err) {
         "SELECT * FROM `gs_user_events_data` WHERE dt_tracker BETWEEN '2020-03-31 17:00:00' AND '2020-04-01 17:00:00' ",
         function (err, result, fields) {
           if (err) throw err;
-          console.log("=======COUNT ROW TABLE======== " + result.length);
+          // console.log("=======COUNT ROW TABLE======== " + result.length);
 
           if (worksheet.rowCount - 1 < result.length) {
             console.log("=== NEED TO SAVE AND SEND LINE MESSAGE===");
@@ -235,10 +169,10 @@ con.getConnection(function (err) {
               //console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
               //  worksheet.addRow({user_id: result[i].user_id,event_id: result[i].event_id});
               if (rowNumber > 1) {
-                console.log(
+                /*      console.log(
                   "======EXCEL DATA RETRIEVE========" +
                     worksheet.getRow(rowNumber).values[2]
-                );
+                ); */
                 myExcelData.push(worksheet.getRow(rowNumber).values[2]);
               }
             });
@@ -254,9 +188,9 @@ con.getConnection(function (err) {
               }
             }
 
-            for (var i = 0; i < myDBData.length; i++) {
+            /* for (var i = 0; i < myDBData.length; i++) {
               console.log("=== DB CHECK ===" + myDBData[i]);
-            }
+            } */
 
             console.log(
               "The Difference Between Excel and DB" +
@@ -264,38 +198,18 @@ con.getConnection(function (err) {
             );
             var myLineSMS = differenceOf2Arrays(myExcelData, myDBData);
             var myLine = myLineSMS.toString().split(",");
-            console.log(
+            /* console.log(
               "=== Last Line SMS Index ===" + myLine[myLine.length - 1]
             );
-            console.log("=== First Line SMS Index ===" + myLineSMS[0]);
+            console.log("=== First Line SMS Index ===" + myLineSMS[0]); */
 
-            var _myQueryArray = [
-              "439",
-              "441",
-              "442",
-              "450",
-              "452",
-              "453",
-              "454",
-              "457",
-              "459",
-              "461",
-              "462",
-              "464",
-              "466",
-              "467",
-              "468",
-              "470",
-              "471",
-              "472",
-              "474",
-              "476",
-            ];
+            var _myQueryArray = differenceOf2Arrays(myExcelData, myDBData);
+
             let _myQuery = new Map();
             console.log("=== Array === " + _myQueryArray);
             var _saveLastData = "";
             var _saveFirstOrderData = "";
-            var _saveLastIndex = 0;
+            var _saveLastIndex = 1;
 
             var _saveArray = [];
             var _saveArrayNoIndex = [];
@@ -345,21 +259,32 @@ con.getConnection(function (err) {
               }
             }
 
-            for (var i = 0; i < _saveArrayNoIndex.length; i++) {
+            if (_saveLastIndex == 1) {
+              _myQuery.set(_saveLastIndex, _saveArray);
+            }
+
+            if (_saveArrayNoIndex.length > 0) {
+              _myQuery.set(0, _saveArrayNoIndex);
+            }
+            /* for (var i = 0; i < _saveArrayNoIndex.length; i++) {
               console.log(
                 "== FOUND NO INDEX NUMBER == " + _saveArrayNoIndex[i]
               );
-            }
+            } */
 
-            console.log(_myQuery.entries());
-            for (let [key, value] of _myQuery) {
-              console.log(key + " with  " + value);
-              for (var i = 0; i < value.length; i++) {
-                console.log(value[i]);
+            //console.log(_myQuery.entries());
+            if (_myQuery.size > 0) {
+              for (let [key, value] of _myQuery) {
+                console.log(key + " with  " + value);
+                for (var i = 0; i < value.length; i++) {
+                  //console.log(value[i]);
+                }
               }
+              _myQuery.clear();
+              console.log("==== SIZE ==== " + _myQuery.size);
+            } else {
+              console.log("==== NO DATA =====");
             }
-            _myQuery.clear();
-            console.log("==== SIZE ==== " + _myQuery.size);
           }
         }
       );
